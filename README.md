@@ -53,3 +53,8 @@ any materials you consulted.
 - Use the DOM API to display related concept results to the user (1 point)
 - Clicking on a result image adds it to the user's mood board (2 points)
 - Clicking on a related concept runs a new search for that concept (1 point)
+
+Sources Used:
+- CHATGPT for troubleshooting
+- Stack Overflow
+- Office Hours

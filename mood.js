@@ -3,35 +3,72 @@ const bing_api_key = BING_API_KEY
 
 function runSearch() {
 
-  // TODO: Clear the results pane before you run a new search
+  document.getElementById("resultsImageContainer").innerHTML = "";
 
   openResultsPane();
 
-  // TODO: Build your query by combining the bing_api_endpoint and a query attribute
-  //  named 'q' that takes the value from the search bar input field.
-
+  let q = document.getElementById("searchbartext").value;
+  let query = `${bing_api_endpoint}?q=${q}`;
   let request = new XMLHttpRequest();
+  
+  request.open("GET", query);
+  request.setRequestHeader("Ocp-Apim-Subscription-Key", bing_api_key);
 
-  // TODO: Construct the request object and add appropriate event listeners to
-  // handle responses. See:
-  // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_XMLHttpRequest
-  //
-  //   - You'll want to specify that you want json as your response type
-  //   - Look for your data in event.target.response
-  //   - When adding headers, also include the commented out line below. See the API docs at:
-  // https://docs.microsoft.com/en-us/bing/search-apis/bing-image-search/reference/headers
-  //   - When you get your responses, add elements to the DOM in #resultsImageContainer to
-  //     display them to the user
-  //   - HINT: You'll need to ad even listeners to them after you add them to the DOM
-  //
-  // request.setRequestHeader("Ocp-Apim-Subscription-Key", bing_api_key);
+  request.responseType = "json";
 
-  // TODO: Send the request
+  request.onload = function(event) {
+    
+    if (event.target.status == 200) {
+
+      let response = event.target.response;
+    
+
+      let imgcontainer = document.getElementById("resultsImageContainer");
+      let suggestions = document.getElementById("suggestions_list");
+
+      images = response.value
+      suggestedSearches = response.relatedSearches
+
+      suggestedSearches.forEach(listItem => {
+        console.log(listItem.text)
+        let listObject = document.createElement("li");
+        listObject.textContent = listItem.text
+        listObject.addEventListener("click", runSearch);
+
+        suggestions.appendChild(listObject);
+      });
+
+      images.forEach(image => {
+        let img = document.createElement("img");
+        img.setAttribute("src", image.thumbnailUrl);
+        img.addEventListener("click", addtoMoodBoard);
+
+
+        imgcontainer.appendChild(img);
+      });
+    } else {
+      console.log("Theres an error");
+    } 
+  }
+
+  function addtoMoodBoard (e) {
+
+    let moodboard = document.getElementById("board");
+    let img = document.createElement("img");
+    
+    img.setAttribute("src", e.target.getAttribute("src")); 
+  
+    moodboard.appendChild(img);
+  }
+
+
+  request.send();
 
   return false;  // Keep this; it keeps the browser from sending the event
                   // further up the DOM chain. Here, we don't want to trigger
                   // the default form submission behavior.
 }
+
 
 function openResultsPane() {
   // This will make the results pane visible.
